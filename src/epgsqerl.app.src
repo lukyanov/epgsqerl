@@ -1,16 +1,42 @@
-{application, 'epgsqerl',
- [{description, "An Erlang PostgreSQL client"},
-  {vsn, "0.1.0"},
-  {registered, []},
-  {mod, {epgsqerl_app, []}},
-  {applications,
-   [kernel,
-    stdlib
-   ]},
-  {env,[]},
-  {modules, []},
+{application, 'epgsqerl', [
+    {description, "An Erlang PostgreSQL client"},
+    {vsn, "0.1.0"},
+    {registered, []},
+    {mod, {epgsqerl_app, []}},
+    {applications, [
+        kernel,
+        stdlib,
+        epgsql,
+        poolboy,
+        sqerl
+    ]},
+    {env,[
+        {pools, [
+            {pool1, [
+                {size, 10},
+                {max_overflow, 20}
+            ], [
+                {hostname, "127.0.0.1"},
+                {port, 5432},
+                {database, "db1"},
+                {username, "db1"},
+                {password, "abc123"},
+                {timeout, 5000}
+            ]},
+            {pool2, [
+                {size, 5},
+                {max_overflow, 10}
+            ], [
+                {hostname, "127.0.0.1"},
+                {database, "db2"},
+                {username, "db2"},
+                {password, "abc123"}
+            ]}
+        ]}
+    ]},
+    {modules, []},
 
-  {maintainers, []},
-  {licenses, []},
-  {links, []}
- ]}.
+    {maintainers, []},
+    {licenses, []},
+    {links, []}
+]}.
