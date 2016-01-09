@@ -1,0 +1,10 @@
+[{<<"epgsql">>,{pkg,<<"epgsql">>,<<"3.1.1">>},0},
+ {<<"nicedecimal">>,
+  {git,"https://github.com/talentdeficit/nicedecimal.git",
+       {ref,"970f1f68f241ad6b78c73b8a92f075585153b509"}},
+  1},
+ {<<"poolboy">>,{pkg,<<"poolboy">>,<<"1.5.1">>},0},
+ {<<"sqerl">>,
+  {git,"git@github.com:devinus/sqerl.git",
+       {ref,"b33058b78171699ad80f318ac71dea5750be149f"}},
+  0}].

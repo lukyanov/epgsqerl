@@ -1,0 +1,16 @@
+{application, 'epgsqerl',
+ [{description, "An Erlang PostgreSQL client"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {mod, {epgsqerl_app, []}},
+  {applications,
+   [kernel,
+    stdlib
+   ]},
+  {env,[]},
+  {modules, []},
+
+  {maintainers, []},
+  {licenses, []},
+  {links, []}
+ ]}.
