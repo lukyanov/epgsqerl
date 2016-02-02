@@ -38,7 +38,7 @@ equery(PoolName, Stmt, Params, Opts) ->
 %% Internal functions
 %%====================================================================
 format_result(Result, Opts) ->
-    case lists:member(map, Opts) of
+    case lists:member(return_map, Opts) of
         true  -> format_epgsql_to_map(Result);
         false -> Result
     end.
@@ -87,7 +87,7 @@ format_result_test_() -> [
                     {<<"v21">>, <<"v22">>}
                 ]
             },
-            Result = format_result(Input, [map]),
+            Result = format_result(Input, [return_map]),
             Expected = {ok, [
                 #{<<"f1">> => <<"v11">>, <<"f2">> => <<"v12">>},
                 #{<<"f1">> => <<"v21">>, <<"f2">> => <<"v22">>}
