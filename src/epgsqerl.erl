@@ -19,7 +19,7 @@ squery(PoolName, SQErl, Opts) when is_tuple(SQErl) ->
     squery(PoolName, SQL, Opts);
 squery(PoolName, SQL, Opts) ->
     Result = poolboy:transaction(PoolName, fun(Worker) ->
-        gen_server:call(Worker, {squery, SQL})
+        gen_server:call(Worker, {squery, SQL}, infinity)
     end),
     format_result(Result, Opts).
 
@@ -30,7 +30,7 @@ equery(PoolName, SQErl, Params, Opts) when is_tuple(SQErl) ->
     equery(PoolName, Stmt, Params, Opts);
 equery(PoolName, Stmt, Params, Opts) ->
     Result = poolboy:transaction(PoolName, fun(Worker) ->
-        gen_server:call(Worker, {equery, Stmt, Params})
+        gen_server:call(Worker, {equery, Stmt, Params}, infinity)
     end),
     format_result(Result, Opts).
 
