@@ -37,11 +37,13 @@ equery(PoolName, Stmt, Params, Opts) ->
 %%====================================================================
 %% Internal functions
 %%====================================================================
-format_result({ok, _, _} = Result, Opts) ->
+format_result({ok, _Columns, _Rows} = Result, Opts) ->
     case lists:member(return_map, Opts) of
         true  -> format_epgsql_to_map(Result);
         false -> Result
     end;
+format_result({ok, _} = Result, _Opts) ->
+    Result;
 format_result({error, _} = Result, _Opts) ->
     Result.
 
@@ -95,6 +97,12 @@ format_result_test_() -> [
                 #{<<"f1">> => <<"v21">>, <<"f2">> => <<"v22">>}
             ]},
             ?assertEqual(Expected, Result)
+        end},
+    {"Formatting when insert/update/delete",
+        fun() ->
+            Input = {ok, 1},
+            Result = format_result(Input, []),
+            ?assertEqual(Input, Result)
         end},
     {"Formatting when error",
         fun() ->
