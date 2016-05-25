@@ -37,11 +37,13 @@ equery(PoolName, Stmt, Params, Opts) ->
 %%====================================================================
 %% Internal functions
 %%====================================================================
-format_result(Result, Opts) ->
+format_result({ok, _, _} = Result, Opts) ->
     case lists:member(return_map, Opts) of
         true  -> format_epgsql_to_map(Result);
         false -> Result
-    end.
+    end;
+format_result({error, _} = Result, _Opts) ->
+    Result.
 
 format_epgsql_to_map({ok, Columns, Rows}) ->
     Result = lists:map(fun(Row) ->
@@ -93,6 +95,14 @@ format_result_test_() -> [
                 #{<<"f1">> => <<"v21">>, <<"f2">> => <<"v22">>}
             ]},
             ?assertEqual(Expected, Result)
+        end},
+    {"Formatting when error",
+        fun() ->
+            Input = {error,{error,error,<<"42P01">>,
+                    <<"relation \"test\" does not exist">>,
+                    [{position,<<"34">>}]}},
+            Result = format_result(Input, []),
+            ?assertEqual(Input, Result)
         end}
 ].
 
