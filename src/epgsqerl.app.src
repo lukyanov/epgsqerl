@@ -6,34 +6,10 @@
     {applications, [
         kernel,
         stdlib,
-        epgsql,
-        poolboy,
+        pgapp,
         sqerl
     ]},
-    {env,[
-        {pools, [
-            {pool1, [
-                {size, 10},
-                {max_overflow, 20}
-            ], [
-                {hostname, "127.0.0.1"},
-                {port, 5432},
-                {database, "db1"},
-                {username, "db1"},
-                {password, "abc123"},
-                {timeout, 5000}
-            ]},
-            {pool2, [
-                {size, 5},
-                {max_overflow, 10}
-            ], [
-                {hostname, "127.0.0.1"},
-                {database, "db2"},
-                {username, "db2"},
-                {password, "abc123"}
-            ]}
-        ]}
-    ]},
+    {env,[]},
     {modules, []},
 
     {maintainers, []},

@@ -1,6 +1,6 @@
 # epgsqerl
 
-An Erlang PostgreSQL client, a mash-up of [epgsql](https://github.com/epgsql/epgsql), [poolboy](https://github.com/devinus/poolboy) and [sqerl](https://github.com/devinus/sqerl).
+An Erlang PostgreSQL client, a mash-up of [epgsql](https://github.com/epgsql/epgsql), [poolboy](https://github.com/devinus/poolboy) and [sqerl](https://github.com/devinus/sqerl). It uses [pgapp](https://github.com/epgsql/pgapp) to combine epgsql and poolboy.
 
 ## Build
 
