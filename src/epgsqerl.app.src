@@ -2,7 +2,6 @@
     {description, "An Erlang PostgreSQL client"},
     {vsn, "0.2.0"},
     {registered, []},
-    {mod, {epgsqerl_app, []}},
     {applications, [
         kernel,
         stdlib,
