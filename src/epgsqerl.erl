@@ -65,9 +65,14 @@ parse_opts([no_maps | Opts], Acc) ->
 parse_opts([{timeout, Timeout} | Opts], Acc) ->
     parse_opts(Opts, Acc#opts{ timeout = Timeout }).
 
-format_result({ok, _Columns, _Rows} = Result, Opts) ->
+format_result({ok, Columns, Rows} = Result, Opts) ->
     case Opts#opts.no_maps of
-        false -> format_epgsql_to_map(Result);
+        false -> {ok, format_epgsql_to_map(Columns, Rows)};
+        true  -> Result
+    end;
+format_result({ok, N, Columns, Rows} = Result, Opts) ->
+    case Opts#opts.no_maps of
+        false -> {ok, N, format_epgsql_to_map(Columns, Rows)};
         true  -> Result
     end;
 format_result({ok, _} = Result, _Opts) ->
@@ -75,7 +80,7 @@ format_result({ok, _} = Result, _Opts) ->
 format_result({error, _} = Result, _Opts) ->
     Result.
 
-format_epgsql_to_map({ok, Columns, Rows}) ->
+format_epgsql_to_map(Columns, Rows) ->
     Length = length(Columns),
     Result = lists:map(fun(Row) ->
         maps:from_list([
@@ -85,7 +90,7 @@ format_epgsql_to_map({ok, Columns, Rows}) ->
                         lists:seq(1, Length))
         ])
     end, Rows),
-    {ok, Result}.
+    Result.
 
 fix_column_name(<<"?column?">>, Index) ->
     integer_to_binary(Index);
@@ -153,11 +158,30 @@ format_result_test_() -> [
             ]},
             ?assertEqual(Expected, Result)
         end},
-    {"Formatting when insert/update/delete",
+    {"Formatting when simple insert/update/delete",
         fun() ->
             Input = {ok, 1},
             Result = format_result(Input, []),
             ?assertEqual(Input, Result)
+        end},
+    {"Formatting when insert/update with returning",
+        fun() ->
+            Input = {ok, 1,
+                [
+                    {column, <<"f1">>,varchar,-1,259,0},
+                    {column, <<"f2">>,varchar,-1,259,0}
+                ],
+                [
+                    {<<"v11">>, <<"v12">>},
+                    {<<"v21">>, <<"v22">>}
+                ]
+            },
+            Result = format_result(Input, #opts{}),
+            Expected = {ok, 1, [
+                #{<<"f1">> => <<"v11">>, <<"f2">> => <<"v12">>},
+                #{<<"f1">> => <<"v21">>, <<"f2">> => <<"v22">>}
+            ]},
+            ?assertEqual(Expected, Result)
         end},
     {"Formatting when error",
         fun() ->
