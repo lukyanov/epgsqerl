@@ -75,6 +75,8 @@ format_result({ok, N, Columns, Rows} = Result, Opts) ->
         false -> {ok, N, format_epgsql_to_map(Columns, Rows)};
         true  -> Result
     end;
+format_result({rollback, _} = Result, _Opts) ->
+    Result;
 format_result({ok, _} = Result, _Opts) ->
     Result;
 format_result({error, _} = Result, _Opts) ->
@@ -188,6 +190,12 @@ format_result_test_() -> [
             Input = {error,{error,error,<<"42P01">>,
                     <<"relation \"test\" does not exist">>,
                     [{position,<<"34">>}]}},
+            Result = format_result(Input, []),
+            ?assertEqual(Input, Result)
+        end},
+    {"Formatting when rollback",
+        fun() ->
+            Input = {rollback, "error"},
             Result = format_result(Input, []),
             ?assertEqual(Input, Result)
         end}
