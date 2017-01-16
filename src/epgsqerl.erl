@@ -79,6 +79,8 @@ format_result({rollback, _} = Result, _Opts) ->
     Result;
 format_result({ok, _} = Result, _Opts) ->
     Result;
+format_result(ok = Result, _Opts) ->
+    Result;
 format_result({error, _} = Result, _Opts) ->
     Result.
 
