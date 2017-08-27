@@ -30,13 +30,9 @@ squery(PoolName, SQErl) ->
 squery(PoolName, SQErl, Opts) when is_tuple(SQErl) ->
     SQL = sqerl:sql(SQErl, true),
     squery(PoolName, SQL, Opts);
-squery(PoolName, SQL, Opts) when is_atom(PoolName) ->
+squery(PoolName, SQL, Opts) ->
     ParsedOpts = parse_opts(Opts),
     Result = pgapp:squery(PoolName, SQL, ParsedOpts#opts.timeout),
-    format_result(Result, ParsedOpts);
-squery(Conn, SQL, Opts) when is_pid(Conn) ->
-    ParsedOpts = parse_opts(Opts),
-    Result = epgsql:squery(Conn, SQL),
     format_result(Result, ParsedOpts).
 
 equery(PoolName, SQErl, Params) ->
@@ -44,24 +40,16 @@ equery(PoolName, SQErl, Params) ->
 equery(PoolName, SQErl, Params, Opts) when is_tuple(SQErl) ->
     Stmt = sqerl:unsafe_sql(SQErl, true),
     equery(PoolName, Stmt, Params, Opts);
-equery(PoolName, Stmt, Params, Opts) when is_atom(PoolName) ->
+equery(PoolName, Stmt, Params, Opts) ->
     ParsedOpts = parse_opts(Opts),
     Result = pgapp:equery(PoolName, Stmt, Params, ParsedOpts#opts.timeout),
-    format_result(Result, ParsedOpts);
-equery(Conn, Stmt, Params, Opts) when is_pid(Conn) ->
-    ParsedOpts = parse_opts(Opts),
-    Result = epgsql:equery(Conn, Stmt, Params),
     format_result(Result, ParsedOpts).
 
 with_transaction(PoolName, Fun) ->
     with_transaction(PoolName, Fun, []).
-with_transaction(PoolName, Fun, Opts) when is_atom(PoolName) ->
+with_transaction(PoolName, Fun, Opts) ->
     ParsedOpts = parse_opts(Opts),
     Result = pgapp:with_transaction(PoolName, Fun, ParsedOpts#opts.timeout),
-    format_result(Result, ParsedOpts);
-with_transaction(Conn, Fun, Opts) when is_pid(Conn) ->
-    ParsedOpts = parse_opts(Opts),
-    Result = epgsql:with_transaction(Conn, Fun),
     format_result(Result, ParsedOpts).
 
 %%====================================================================
