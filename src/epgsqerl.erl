@@ -9,7 +9,8 @@
 -export([connect/2,
          squery/2, squery/3,
          equery/3, equery/4,
-         with_transaction/2, with_transaction/3]).
+         with_transaction/2, with_transaction/3,
+         array/1]).
 
 -define(DEFAULT_QUERY_TIMEOUT, 5000).
 
@@ -51,6 +52,14 @@ with_transaction(PoolName, Fun, Opts) ->
     ParsedOpts = parse_opts(Opts),
     Result = pgapp:with_transaction(PoolName, Fun, ParsedOpts#opts.timeout),
     format_result(Result, ParsedOpts).
+
+array([]) -> <<"{}">>;
+array(null) -> null;
+array(undefined) -> null;
+array(List) ->
+    ListStr = [any_to_list(escape(E)) || E <- List],
+    Joined = list_to_binary(string:join(ListStr, "\",\"")),
+    <<"{\"", Joined/binary, "\"}">>.
 
 %%====================================================================
 %% Internal functions
@@ -100,6 +109,19 @@ fix_column_name(<<"?column?">>, Index) ->
     integer_to_binary(Index);
 fix_column_name(Name, _Index) ->
     Name.
+
+any_to_list(V) when is_list(V) -> V;
+any_to_list(V) when is_binary(V) ->
+	binary_to_list(V);
+any_to_list(V) when is_integer(V) ->
+	integer_to_list(V).
+
+escape(V) when is_list(V) ->
+    escape(list_to_binary(V));
+escape(V) when is_binary(V) ->
+    binary:replace(V, [<<"\"">>, <<"\\">>], <<"\\">>,
+        [global, {insert_replaced,1}]);
+escape(V) -> V.
 
 %%====================================================================
 %% Tests
@@ -201,6 +223,13 @@ format_result_test_() -> [
             Result = format_result(Input, []),
             ?assertEqual(Input, Result)
         end}
+].
+
+array_test_() -> [
+	?_assertEqual(<<"{\"1\",\"2\",\"3\"}">>, array([1, 2, 3])),
+	?_assertEqual(<<"{\"a\",\"b\",\"c\"}">>, array(["a", "b", "c"])),
+	?_assertEqual(<<"{\"a\",\"b\",\"c\"}">>, array([<<"a">>, <<"b">>, <<"c">>])),
+	?_assertEqual(<<"{\"aaa'bbb\\\"ccc\",\"\\\\foo\"}">>, array([<<"aaa'bbb\"ccc">>, <<"\\foo">>]))
 ].
 
 -endif.
